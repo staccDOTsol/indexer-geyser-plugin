@@ -1,13 +1,11 @@
 {
+  "libpath": "/home/ubuntu/indexer-geyser-plugin/target/release/libholaplex_indexer_rabbitmq_geyser.so",
   "amqp": {
-    "network": "devnet",
-    "address": "amqp://"
+    "network": "mainnet",
+    "address": "amqp://root:rootpassword@localhost"
   },
   "jobs": {
     "limit": 16
-  },
-  "metrics": {
-   "config": "host="
   },
   "accounts": {
     "owners": [

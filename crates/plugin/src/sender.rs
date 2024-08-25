@@ -5,13 +5,13 @@ use indexer_rabbitmq::{
     lapin::{Connection, ConnectionProperties},
     suffix::Suffix,
 };
-use tokio::sync::{RwLock, RwLockReadGuard};
+use tokio::sync::{RwLock, RwLockReadGuard, Mutex};
 
 use crate::{
-    config,
+    config::{self}, // Add AmqpConfig here
     metrics::{Counter, Metrics},
 };
-
+use crate::config::Amqp;
 #[derive(Debug)]
 pub struct Sender {
     amqp: config::Amqp,
@@ -23,19 +23,18 @@ pub struct Sender {
 
 impl Sender {
     pub async fn new(
-        amqp: config::Amqp,
+        amqp: Amqp,
         name: String,
         startup_type: StartupType,
         metrics: Arc<Metrics>,
     ) -> Result<Self, indexer_rabbitmq::Error> {
-        let producer = Self::create_producer(&amqp, name.as_ref(), startup_type).await?;
-
+        let producer = Self::create_producer(&amqp, name.as_str(), startup_type).await?;
         Ok(Self {
             amqp,
             name,
             startup_type,
-            producer: RwLock::new(producer),
             metrics,
+            producer: RwLock::new(producer),
         })
     }
 
@@ -69,7 +68,7 @@ impl Sender {
         std::mem::drop(prod);
         let mut prod = self.producer.write().await;
 
-        *prod = Self::create_producer(&self.amqp, self.name.as_ref(), self.startup_type).await?;
+        *prod = Self::create_producer(&self.amqp, <std::string::String as AsRef<str>>::as_ref(&self.name), self.startup_type).await?;
 
         Ok(prod.downgrade())
     }
