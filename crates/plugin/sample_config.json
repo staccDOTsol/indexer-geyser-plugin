@@ -13,7 +13,7 @@
     ],
     "pubkeys": [],
     "mints": [],
-    "startup": false
+    "startup": true
   },
   "instructions": {
     "programs": [
